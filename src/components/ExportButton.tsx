@@ -19,16 +19,17 @@ export default function ExportButton() {
   return (
     <Button
       variant="outline"
+      size="sm"
       onClick={handleExport}
       disabled={loading}
-      className="border-border text-foreground hover:bg-secondary"
+      className="rounded-full px-4 text-[13px] font-medium border-border/60"
     >
       {loading ? (
-        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
       ) : (
-        <Download className="h-4 w-4 mr-2" />
+        <Download className="h-3.5 w-3.5 mr-1.5" />
       )}
-      Export S3 Report
+      Export
     </Button>
   );
 }

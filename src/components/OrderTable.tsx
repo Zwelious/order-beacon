@@ -30,22 +30,23 @@ function CopyButton({ text }: { text: string }) {
       className="ml-1.5 inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
       title="Copy to clipboard"
     >
-      {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-3.5 w-3.5 text-badge-confirmed" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
   const colorMap: Record<string, string> = {
-    CONFIRMED: "bg-badge-confirmed/15 text-badge-confirmed border-badge-confirmed/30",
-    PENDING: "bg-badge-pending/15 text-badge-pending border-badge-pending/30",
-    CANCELLED: "bg-badge-cancelled/15 text-badge-cancelled border-badge-cancelled/30",
+    CONFIRMED: "bg-badge-confirmed/10 text-badge-confirmed",
+    PENDING: "bg-badge-pending/10 text-badge-pending",
+    CANCELLED: "bg-badge-cancelled/10 text-badge-cancelled",
   };
-  const cls = colorMap[status] || "bg-secondary text-secondary-foreground border-border";
+  const cls = colorMap[status] || "bg-secondary text-secondary-foreground";
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${cls}`}>
-      {status}
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${status === 'CONFIRMED' ? 'bg-badge-confirmed' : status === 'PENDING' ? 'bg-badge-pending' : 'bg-badge-cancelled'}`} />
+      {status.charAt(0) + status.slice(1).toLowerCase()}
     </span>
   );
 }
@@ -57,7 +58,7 @@ function TableSkeleton() {
         <TableRow key={i}>
           {Array.from({ length: 6 }).map((_, j) => (
             <TableCell key={j}>
-              <div className="h-4 shimmer rounded w-full max-w-[120px]" />
+              <div className="h-4 shimmer rounded-full w-full max-w-[120px]" />
             </TableCell>
           ))}
         </TableRow>
@@ -73,17 +74,17 @@ interface OrderTableProps {
 
 export default function OrderTable({ orders, isLoading }: OrderTableProps) {
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
+    <div className="rounded-2xl border border-border/60 bg-card apple-shadow overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="border-border hover:bg-transparent">
-              <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Order ID</TableHead>
-              <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Product ID</TableHead>
-              <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">User ID</TableHead>
-              <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Qty</TableHead>
-              <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Status</TableHead>
-              <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Created At</TableHead>
+            <TableRow className="border-border/60 hover:bg-transparent">
+              <TableHead className="text-muted-foreground text-xs font-medium">Order ID</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">Product ID</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">User ID</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">Qty</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">Status</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">Created</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -97,24 +98,24 @@ export default function OrderTable({ orders, isLoading }: OrderTableProps) {
               </TableRow>
             ) : (
               orders.map((order) => (
-                <TableRow key={order.orderId} className="border-border hover:bg-secondary/50 transition-colors">
-                  <TableCell className="font-mono text-sm">
+                <TableRow key={order.orderId} className="border-border/40 hover:bg-accent/50 transition-colors">
+                  <TableCell className="font-mono text-[13px] text-muted-foreground">
                     {truncateUUID(order.orderId)}
                     <CopyButton text={order.orderId} />
                   </TableCell>
-                  <TableCell className="font-mono text-sm">
+                  <TableCell className="font-mono text-[13px] text-muted-foreground">
                     {truncateUUID(order.productId)}
                     <CopyButton text={order.productId} />
                   </TableCell>
-                  <TableCell className="font-mono text-sm">
+                  <TableCell className="font-mono text-[13px] text-muted-foreground">
                     {truncateUUID(order.userId)}
                     <CopyButton text={order.userId} />
                   </TableCell>
-                  <TableCell className="font-semibold">{order.quantity}</TableCell>
+                  <TableCell className="font-semibold text-foreground">{order.quantity}</TableCell>
                   <TableCell>
                     <StatusBadge status={order.status} />
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-[13px] text-muted-foreground">
                     {format(new Date(order.createdAt), "MMM d, yyyy · HH:mm")}
                   </TableCell>
                 </TableRow>

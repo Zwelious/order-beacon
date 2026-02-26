@@ -24,32 +24,42 @@ export default function AiInsightPanel({ orders }: AiInsightPanelProps) {
   };
 
   return (
-    <div className="space-y-3">
-      <Button
-        onClick={handleGenerate}
-        disabled={loading || orders.length === 0}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 glow-primary"
-      >
-        <Sparkles className="h-4 w-4 mr-2" />
-        {loading ? "Analyzing…" : "✨ Generate AI Insights"}
-      </Button>
-
-      {loading && (
-        <div className="rounded-lg border border-border bg-card p-5 space-y-2">
-          <div className="h-4 w-3/4 shimmer rounded" />
-          <div className="h-4 w-1/2 shimmer rounded" />
-          <div className="h-4 w-2/3 shimmer rounded" />
-        </div>
-      )}
-
-      {insight && !loading && (
-        <div className="rounded-lg border border-primary/30 bg-card p-5 glow-primary animate-fade-in">
-          <div className="flex items-start gap-3">
-            <Sparkles className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-            <p className="text-sm leading-relaxed text-foreground">{insight}</p>
+    <div className="rounded-2xl bg-card border border-border/60 apple-shadow overflow-hidden">
+      <div className="p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Sparkles className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">AI Insights</h3>
+              <p className="text-xs text-muted-foreground">Powered by machine learning</p>
+            </div>
           </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={loading || orders.length === 0}
+            size="sm"
+            className="rounded-full px-5 text-[13px] font-medium"
+          >
+            {loading ? "Analyzing…" : "Generate"}
+          </Button>
         </div>
-      )}
+
+        {loading && (
+          <div className="space-y-2.5 pt-2">
+            <div className="h-4 w-3/4 shimmer rounded-full" />
+            <div className="h-4 w-1/2 shimmer rounded-full" />
+            <div className="h-4 w-2/3 shimmer rounded-full" />
+          </div>
+        )}
+
+        {insight && !loading && (
+          <div className="rounded-xl bg-primary/[0.04] border border-primary/10 p-4 animate-fade-in">
+            <p className="text-[14px] leading-relaxed text-foreground">{insight}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
