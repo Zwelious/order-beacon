@@ -1,21 +1,36 @@
 import { useEffect, useState } from "react";
-import { Activity, BarChart3, Zap } from "lucide-react";
-import { fetchOrders, type Order } from "@/lib/api";
+import { BarChart3, Box, Zap, ShoppingCart } from "lucide-react";
+import { fetchOrders, fetchProducts, type Order, type Product } from "@/lib/api";
 import StatCards from "@/components/StatCards";
 import AiInsightPanel from "@/components/AiInsightPanel";
 import OrderTable from "@/components/OrderTable";
+import ProductTable from "@/components/ProductTable";
 import ExportButton from "@/components/ExportButton";
+import SearchBar from "@/components/SearchBar";
+
+type Tab = "orders" | "products";
 
 const Index = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [searchResults, setSearchResults] = useState<Product[] | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>("orders");
 
   useEffect(() => {
     fetchOrders()
       .then(setOrders)
       .catch(console.error)
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingOrders(false));
+    fetchProducts()
+      .then(setProducts)
+      .catch(console.error)
+      .finally(() => setLoadingProducts(false));
   }, []);
+
+  const displayedProducts = searchResults !== null ? searchResults : products;
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,21 +61,59 @@ const Index = () => {
         </div>
 
         {/* Stats */}
-        <StatCards orders={orders} isLoading={loading} />
+        <StatCards orders={orders} isLoading={loadingOrders} />
 
         {/* AI Insights */}
         <AiInsightPanel orders={orders} />
 
-        {/* Table section */}
+        {/* Segmented Control + Content */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-sm font-medium text-muted-foreground">Recent Orders</h2>
+            <div className="flex items-center gap-1 p-1 rounded-full bg-muted border border-border/60">
+              <button
+                onClick={() => setActiveTab("orders")}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 ${
+                  activeTab === "orders"
+                    ? "bg-card text-foreground apple-shadow"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <ShoppingCart className="h-3.5 w-3.5" />
+                Recent Orders
+              </button>
+              <button
+                onClick={() => setActiveTab("products")}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 ${
+                  activeTab === "products"
+                    ? "bg-card text-foreground apple-shadow"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Box className="h-3.5 w-3.5" />
+                Products
+              </button>
             </div>
-            <span className="text-xs text-muted-foreground">{orders.length} total</span>
+
+            <div className="flex items-center gap-3">
+              {activeTab === "products" && (
+                <SearchBar
+                  onResults={setSearchResults}
+                  onClear={() => setSearchResults(null)}
+                  isSearching={isSearching}
+                  setIsSearching={setIsSearching}
+                />
+              )}
+              <span className="text-xs text-muted-foreground">
+                {activeTab === "orders" ? `${orders.length} total` : `${displayedProducts.length} total`}
+              </span>
+            </div>
           </div>
-          <OrderTable orders={orders} isLoading={loading} />
+
+          {activeTab === "orders" ? (
+            <OrderTable orders={orders} isLoading={loadingOrders} />
+          ) : (
+            <ProductTable products={displayedProducts} isLoading={loadingProducts || isSearching} />
+          )}
         </div>
       </div>
     </div>
